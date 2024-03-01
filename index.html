@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"
+      integrity="sha512-M7nHCiNUOwFt6Us3r8alutZLm9qMt4s9951uo8jqO4UwJ1hziseL6O3ndFyigx6+LREfZqnhHxYjKRJ8ZQ69DQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src=" https://cdn.jsdelivr.net/npm/d3-geo@3.1.0/dist/d3-geo.min.js "></script>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
+
+  <body>
+    <div id="canvas">
+      <div id="text-container">
+        <h2>
+          Profitieren Einwohner von Urban Green Infrastructure von der
+          Hitzestressreduktion?
+        </h2>
+        <p>
+          Auf der Basis bundesweit regelmäßig verfügbarer Geodaten wird für die
+          wichtigsten städtischen Oberflächentypen mithilfe der Baumkronen- und
+          Bodenbedeckung sowie unter Berücksichtigung der Flächengrößen und
+          Lagemerkmale ein spezifischer Kühlkapazitätswert bestimmt. Als
+          signifikante Temperaturveränderung durch Urbane Grüne Infrastruktur
+          wird die potenzielle Abkühlung von mindestens 2,1 K bewertet, was eine überdurchschnittlich gute Kühlung
+          repräsentiert.
+        </p>
+        <p>Die Karte rechts zeigt den Anteil der Bevölkerung in 165 deutschen Städten 
+          mit mehr als 50.000 Einwohnern in 2018, der durch Urbane Grüne Infrastruktur mit 
+          guter bis sehr guter Kühlkapazität versorgt wird.</p>
+        <p>
+          Insgesamt können 76 % der Bevölkerung in den 165 untersuchten
+          deutschen Städten von hohen oder sehr hohen Kühlkapazitäten in ihrer
+          unmittelbaren Wohnumgebung profitieren.
+        </p>
+      </div>
+
+      <svg id="map-container"></svg>
+    </div>
+    <script>
+      // Define the SVG width and height by window size
+      const width = document.getElementById("map-container").clientWidth;
+      const height = document.getElementById("map-container").clientHeight;
+
+      // Create the SVG element
+      var map = d3
+        .select("#map-container")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+      // Define the projection (Mercator) EPSG 4326
+      var projection = d3
+        .geoMercator()
+        .center([10.4515, 51.1657]) // Center the map in the SVG
+        .scale((height / 22) * 100) // Zoom level
+        .translate([width / 2.5, height / 2]); // Translate to the center
+
+      // set the color palette (ioer secondary colors)
+      var color = d3.scaleThreshold(
+        [55, 65, 75, 85],
+        ["#f5d300", "#ccc40b", "#22942c", "#007c6e", "#0089b9"]
+      );
+
+      // Create a path generator
+      var path = d3.geoPath().projection(projection);
+
+      // Geojson File path
+      const files = [
+        "CCA_80_u_mehr_Ant_Ew_vg_25_GEM.geojson",
+        "Germany.geojson",
+      ];
+
+
+      let promises = [];
+
+      // Load each geojson file, geojson transfered and simplified from shp in QGIS
+      files.forEach((url) => promises.push(d3.json(url)));
+      Promise.all(promises).then(function (data) {
+        adjustContainerSize();
+        var value_cities = data[0];
+        var base_map = data[1];
+
+        // Append base map paths
+        map
+          .selectAll("#base_map")
+          .data(base_map.features)
+          .enter()
+          .append("path")
+          .attr("id", "base-map")
+          .attr("d", path)
+          .attr("fill", "transparent")
+          .attr("stroke", "grey");
+
+        // Append city paths
+        map
+          .selectAll("#city")
+          .data(value_cities.features)
+          .enter()
+          .append("path")
+          .attr("id", "city")
+          .attr("d", path)
+          .attr("fill", (d) => color(d.properties.SUM_EW_Ant))
+          .attr("title", "1");
+
+        map.call(zoomable);
+
+        // Append tooltip to show information
+        const tooltip = map.append("g").attr("class","tooltip");
+
+        // Add mouse listener to display hover effect
+        map
+          .selectAll("#city")
+          .on("touchmove mouseover", function (event, d) {
+            tooltip.call(
+              popUp,
+              `${d.properties.GEN}`,
+              `${d.properties.SUM_EW_Ant}`
+            );
+            tooltip.attr("transform", `translate(${d3.pointer(event, this)})`);
+
+            d3.selectAll("#city")
+              .transition()
+              .duration(200)
+              .style("opacity", 0.5);
+            d3.select(this).transition().duration(200).style("opacity", 1);
+          })
+          .on("touchend mouseleave", function () {
+            tooltip.call(popUp, null);
+
+            d3.selectAll("#city")
+              .transition()
+              .duration(200)
+              .style("opacity", 0.8);
+            d3.select(this).transition().duration(200).style("stroke", null);
+          });
+
+
+
+        // Add event listener for window resize
+        window.addEventListener("resize", updateDimensions);
+      });
+
+      //enable zoom
+      const zoom = true
+
+	var zoomable = d3.zoom()
+		  .scaleExtent([1, 2])
+		  .on('zoom', function(event) {
+			  map.selectAll("path")
+			   .attr('transform', event.transform);
+	});
+  
+      // define a pop up window
+      function popUp(g, name, value) {
+        if (!value) return g.style("display", "none");
+
+        g.style("display", null)
+          .style("pointer-events", "none")
+          .style("font-size", "14px");
+
+        const path = g
+          .selectAll("path")
+          .data([null])
+          .join("path")
+          .attr("fill", "white")
+          .attr("stroke", "black");
+
+        const text = g
+          .selectAll("text")
+          .data([null])
+          .join("text")
+          .call((text) =>
+            text
+              .selectAll("tspan")
+              .data([
+                // Use an array to bind name and value
+                `${name}`, 
+                `Anteil: ${d3.format(".2f")(value)}%`, // Second tspan for value
+              ])
+              .join("tspan")
+              .attr("x", 0)
+              .attr("y", (d, i) => `${i * 1.1}em`)
+              .style("font-weight", (_,i) => (i ? "bold":null))
+              .text((d) => d)
+          );
+
+        const { x, y, width: w, height: h } = text.node().getBBox();
+        text.attr("transform", `translate(${-w / 2},${y-15})`);
+        path.attr(
+          "d",
+          `M${-w / 2 - 10},-5 H-5l5,5l5,-5H${w / 2 + 10}v${-h - 10}h-${w + 20}z`
+        );
+      }
+
+      // Function to update SVG dimensions when window is resized
+      function updateDimensions() {
+        adjustContainerSize();
+        const winWidth = document.getElementById("map-container").clientWidth; // Get the width of the left container
+        const winHeight = document.getElementById("map-container").clientHeight; // Get the height of the left container
+
+        // Update SVG dimensions
+        map.attr("width", winWidth).attr("height", winHeight);
+
+        // Update projection
+        projection
+          .center([10.4515, 51.1657]) // Center the map in the SVG
+          .scale((winHeight / 22) * 100) // Zoom level
+          .translate([winWidth / 2.5, winHeight / 2]);
+
+        // Update path generator with the new projection
+        path.projection(projection);
+
+        // Update base map paths with the new projection
+        map.selectAll("#base-map").attr("d", path);
+
+        // Update city paths with the new projection
+        map.selectAll("#city").attr("d", path);
+      }
+
+      function adjustContainerSize() {
+        const container = document.getElementById("canvas");
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        if (windowWidth * windowHeight < 620000) {
+          container.style.height = "auto";
+        } else {
+          container.style.height = "100%";
+        }
+      }
+    </script>
+  </body>
+</html>
