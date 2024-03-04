@@ -80,7 +80,6 @@
       // Load each geojson file, geojson transfered and simplified from shp in QGIS
       files.forEach((url) => promises.push(d3.json(url)));
       Promise.all(promises).then(function (data) {
-        adjustContainerSize();
         var value_cities = data[0];
         var base_map = data[1];
 
