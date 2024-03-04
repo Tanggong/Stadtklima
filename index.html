@@ -24,12 +24,14 @@
           Bodenbedeckung sowie unter Berücksichtigung der Flächengrößen und
           Lagemerkmale ein spezifischer Kühlkapazitätswert bestimmt. Als
           signifikante Temperaturveränderung durch Urbane Grüne Infrastruktur
-          wird die potenzielle Abkühlung von mindestens 2,1 K bewertet, was eine überdurchschnittlich gute Kühlung
-          repräsentiert.
+          wird die potenzielle Abkühlung von mindestens 2,1 K bewertet, was eine
+          überdurchschnittlich gute Kühlung repräsentiert.
         </p>
-        <p>Die Karte rechts zeigt den Anteil der Bevölkerung in 165 deutschen Städten 
-          mit mehr als 50.000 Einwohnern in 2018, der durch Urbane Grüne Infrastruktur mit 
-          guter bis sehr guter Kühlkapazität versorgt wird.</p>
+        <p>
+          Die Karte rechts zeigt den Anteil der Bevölkerung in 165 deutschen
+          Städten mit mehr als 50.000 Einwohnern in 2018, der durch Urbane Grüne
+          Infrastruktur mit guter bis sehr guter Kühlkapazität versorgt wird.
+        </p>
         <p>
           Insgesamt können 76 % der Bevölkerung in den 165 untersuchten
           deutschen Städten von hohen oder sehr hohen Kühlkapazitäten in ihrer
@@ -73,7 +75,6 @@
         "Germany.geojson",
       ];
 
-
       let promises = [];
 
       // Load each geojson file, geojson transfered and simplified from shp in QGIS
@@ -105,10 +106,8 @@
           .attr("fill", (d) => color(d.properties.SUM_EW_Ant))
           .attr("title", "1");
 
-        map.call(zoomable);
-
         // Append tooltip to show information
-        const tooltip = map.append("g").attr("class","tooltip");
+        const tooltip = map.append("g").attr("class", "tooltip");
 
         // Add mouse listener to display hover effect
         map
@@ -138,21 +137,24 @@
           });
 
 
+          // //enable zoom
+        // const zoom = true;
+
+        // var zoomable = d3
+        //   .zoom()
+        //   .scaleExtent([1, 2])
+        //   .on("zoom", function (event) {
+        //     map.selectAll("path").attr("transform", event.transform);
+        //     tooltip.attr("transform", `d3.pointer(event, this)`); // Update tooltip position
+        //   });
+
+        // optional zoom effect, tooltips location wrong after zoomed
+        // map.call(zoomable);
 
         // Add event listener for window resize
         window.addEventListener("resize", updateDimensions);
       });
 
-      //enable zoom
-      const zoom = true
-
-	var zoomable = d3.zoom()
-		  .scaleExtent([1, 2])
-		  .on('zoom', function(event) {
-			  map.selectAll("path")
-			   .attr('transform', event.transform);
-	});
-  
       // define a pop up window
       function popUp(g, name, value) {
         if (!value) return g.style("display", "none");
@@ -177,18 +179,18 @@
               .selectAll("tspan")
               .data([
                 // Use an array to bind name and value
-                `${name}`, 
+                `${name}`,
                 `Anteil: ${d3.format(".2f")(value)}%`, // Second tspan for value
               ])
               .join("tspan")
               .attr("x", 0)
               .attr("y", (d, i) => `${i * 1.1}em`)
-              .style("font-weight", (_,i) => (i ? "bold":null))
+              .style("font-weight", (_, i) => (i ? "bold" : null))
               .text((d) => d)
           );
 
         const { x, y, width: w, height: h } = text.node().getBBox();
-        text.attr("transform", `translate(${-w / 2},${y-15})`);
+        text.attr("transform", `translate(${-w / 2},${y - 15})`);
         path.attr(
           "d",
           `M${-w / 2 - 10},-5 H-5l5,5l5,-5H${w / 2 + 10}v${-h - 10}h-${w + 20}z`
