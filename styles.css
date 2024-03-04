@@ -17,10 +17,23 @@ body {
   justify-content: center;
   padding:1em;  
   background-color: #F2F2F3;
-
 }
 
 
 #map-container{
+  position:relative;
   flex: 2;
+  display: flex;
+}
+
+#map{
+  height: 100%;
+  width: 100%;
+}
+
+#legend {
+  position: absolute; /* Position the legend absolutely */
+  top:auto;
+  bottom: 10%; /* Adjust top position as needed */
+  right: 5em; /* Adjust right position as needed */
 }
