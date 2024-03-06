@@ -1,12 +1,13 @@
+// Define the SVG width and height by window size
+  
 adjustContainerSize();
 
-// Define the SVG width and height by window size
 const width = document.getElementById("map-container").clientWidth;
 const height = document.getElementById("map-container").clientHeight;
 
 // Create the SVG element
 var map = d3
-  .select("#map")
+  .select("#map-container")
   .append("svg")
   .attr("width", width)
   .attr("height", height);
@@ -27,11 +28,14 @@ var color = d3.scaleThreshold(
 // Create a path generator
 var path = d3.geoPath().projection(projection);
 
+// Declare layers
+const lyr_base = map.append("g");
+const lyr_city = map.append("g");
+const lyr_mCity = map.append("g").attr("display","none");
+const lyr_popUp = map.append("g");
+
 // Geojson File path
-const files = [
-  "CCA_80_u_mehr_Ant_Ew_vg_25_GEM.geojson",
-  "Germany.geojson",
-];
+const files = ["CCA_80_u_mehr_Ant_Ew_vg_25_GEM.geojson", "Germany.geojson"];
 
 let promises = [];
 
@@ -42,8 +46,7 @@ Promise.all(promises).then(function (data) {
   var base_map = data[1];
 
   // Append base map paths
-  map.append('g')
-    .selectAll("#base_map")
+  lyr_base.selectAll("path")
     .data(base_map.features)
     .enter()
     .append("path")
@@ -53,8 +56,7 @@ Promise.all(promises).then(function (data) {
     .attr("stroke", "grey");
 
   // Append city paths
-  map.append('g')
-    .selectAll("#city")
+  lyr_city.selectAll("path")
     .data(value_cities.features)
     .enter()
     .append("path")
@@ -63,38 +65,72 @@ Promise.all(promises).then(function (data) {
     .attr("fill", (d) => color(d.properties.SUM_EW_Ant))
     .attr("title", "1");
 
+  // the list of milion cities
+  const mCity = [
+    { gen: "Berlin", coord: [13.3777, 52.5182] },
+    { gen: "Hamburg", coord: [9.992, 53.5502] },
+    { gen: "München", coord: [11.5755, 48.1372] },
+    { gen: "Köln", coord: [6.9583, 50.9413] },
+  ];
+
+  // add point to milion cities, before click, it shouldn't shown
+  const pnt_mCity = lyr_mCity.selectAll("circle")
+  .data(mCity)
+  .enter()
+  .append("circle")
+  .attr("cx", d => projection(d.coord)[0])
+  .attr("cy", d => projection(d.coord)[1])
+  .attr("r", 3)
+  .attr("stroke", "black");
+
+    
+  const lbl_mCity = lyr_mCity.selectAll("text")
+  .data(mCity)
+  .enter()
+  .append("text")
+  .attr("text-anchor", "middle")
+  .attr("x", d => projection(d.coord)[0])
+  .attr("y", d => projection(d.coord)[1] - 8)
+  .text(d => d.gen)
+  .attr("font-size", "18px")
+  .attr("fill", "black")
+  .attr("font-weight", "bold")
+  .attr("class","text-with-halo");
+
+
   // Append tooltip to show information
-  const tooltip = map.append("g").attr("class", "tooltip");
+  const tooltip = lyr_popUp.append("g").attr("class", "tooltip");
 
   // Add mouse listener to display hover effect
   map
     .selectAll("#city")
-    .on("touchmove mouseover", function (event, d) {
-      tooltip.call(
-        popUp,
-        `${d.properties.GEN}`,
-        `${d.properties.SUM_EW_Ant}`
-      );
+    .on("touchmove mouseover mousemove", function (event, d) {
+      tooltip.call(popUp, `${d.properties.GEN}`, `${d.properties.SUM_EW_Ant}`);
       tooltip.attr("transform", `translate(${d3.pointer(event, this)})`);
 
-      d3.selectAll("#city")
-        .transition()
-        .duration(200)
-        .style("opacity", 0.5);
+      d3.selectAll("#city").transition().duration(200).style("opacity", 0.5);
       d3.select(this).transition().duration(200).style("opacity", 1);
     })
     .on("touchend mouseleave", function () {
       tooltip.call(popUp, null);
 
-      d3.selectAll("#city")
-        .transition()
-        .duration(200)
-        .style("opacity", 0.8);
+      d3.selectAll("#city").transition().duration(200).style("opacity", 0.8);
       d3.select(this).transition().duration(200).style("stroke", null);
     });
 
+  //append legend
 
-    // //enable zoom
+  map
+    .append("g")    
+    .attr("id","legend")
+    .attr("transform", `translate(${width / 1.2},${height / 1.5})`)
+    .append(() =>
+      Legend(color, {
+        title: "Anteil (%)",
+      })
+    );
+
+  // //enable zoom
   // const zoom = true;
 
   // var zoomable = d3
@@ -108,14 +144,23 @@ Promise.all(promises).then(function (data) {
   // optional zoom effect, tooltips location wrong after zoomed
   // map.call(zoomable);
 
+  // Show Million Cities if tag is clicked
+  document.getElementById("tag_MCity").addEventListener("click", showMCity);
+
+  function showMCity() {
+    lyr_mCity.attr("display", "block");
+    pnt_mCity.attr("cx", d => projection(d.coord)[0])
+    .attr("cy", d => projection(d.coord)[1]);
+    lbl_mCity.attr("x", d => projection(d.coord)[0])
+    .attr("y", d => projection(d.coord)[1] - 8);
+  }
+  
   // Add event listener for window resize
-  window.addEventListener("resize", updateDimensions);
+  return window.addEventListener("resize", updateDimensions);
+
+
 });
 
-legend =Legend(color, {
-title: "Anteil (%)"
-});
-d3.select("#legend").append(() => legend);
 // define a pop up window
 function popUp(g, name, value) {
   if (!value) return g.style("display", "none");
@@ -159,7 +204,7 @@ function popUp(g, name, value) {
 }
 
 // Function to update SVG dimensions when window is resized
-function updateDimensions() {
+function updateDimensions() { 
   adjustContainerSize();
   const winWidth = document.getElementById("map-container").clientWidth; // Get the width of the left container
   const winHeight = document.getElementById("map-container").clientHeight; // Get the height of the left container
@@ -168,7 +213,7 @@ function updateDimensions() {
   map.attr("width", winWidth).attr("height", winHeight);
 
   // Update projection
-  projection
+  projection = projection
     .center([10.4515, 51.1657]) // Center the map in the SVG
     .scale((winHeight / 22) * 100) // Zoom level
     .translate([winWidth / 2.5, winHeight / 2]);
@@ -181,100 +226,127 @@ function updateDimensions() {
 
   // Update city paths with the new projection
   map.selectAll("#city").attr("d", path);
+
+  // Update legend with the new projection
+  map.selectAll("#legend")
+    .attr("transform", `translate(${winWidth / 1.2},${winHeight / 1.5})`);
+  
+  // disable mcity labels when resize
+  lyr_mCity.attr("display", "none");
+
 }
 
 function adjustContainerSize() {
   const container = document.getElementById("canvas");
+  const txtcontainer = document.getElementById("text-container");
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
 
-  if (windowWidth * windowHeight < 650000) {
-    container.style.height = "auto";
-  } else {
+  if (windowWidth * windowHeight > 650000) {
     container.style.height = "100%";
+  } else {
+    container.style.height = "auto";
+    txtcontainer.style.overflow = "auto";
+    txtcontainer.style.justifyContent  = "start";
+  };
+};
+
+function Legend(
+  color,
+  {
+    title,
+    tickSize = 5,
+    width = 10 + tickSize,
+    height = 200,
+    marginTop = 20,
+    marginRight = 0,
+    marginBottom = 10 + tickSize,
+    marginLeft = 0,
+    ticks = width / 65,
+    tickFormat,
+    tickValues,
+  } = {}
+) {
+  const legend = d3
+    .create("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("viewBox", [0, 0, width, height])
+    .style("overflow", "visible")
+    .style("display", "block");
+
+  let tickAdjust = (g) => {
+    g.selectAll(".tick line").attr("x1", marginLeft + marginRight - width);
+    g.selectAll(".tick text").attr("font-size", 12);
+  };
+  let y;
+
+  // Continuous
+  if (color.invertExtent) {
+    const thresholds = color.thresholds
+      ? color.thresholds() // scaleQuantize
+      : color.quantiles
+      ? color.quantiles() // scaleQuantile
+      : color.domain(); // scaleThreshold
+
+    const thresholdFormat =
+      tickFormat === undefined
+        ? (d) => d
+        : typeof tickFormat === "string"
+        ? d3.format(tickFormat)
+        : tickFormat;
+
+    // x = d3.scaleLinear()
+    //     .domain([-1, color.range().length - 1])
+    //     .rangeRound([marginLeft, width - marginRight]);
+
+    y = d3
+      .scaleLinear()
+      .domain([-1, color.range().length - 1])
+      .rangeRound([marginTop, height - marginBottom]);
+
+    legend
+      .append("g")
+      .selectAll("rect")
+      .data(color.range())
+      .join("rect")
+      .attr("x", marginLeft)
+      .attr("y", (d, i) => y(i - 1))
+      .attr("width", width - marginLeft - marginRight)
+      .attr("height", (d, i) => y(i) - y(i - 1))
+      .attr("fill", (d) => d);
+
+    tickValues = d3.range(thresholds.length);
+    tickFormat = (i) => thresholdFormat(thresholds[i], i);
   }
+
+  legend
+    .append("g")
+    .attr("transform", `translate(${width - marginLeft},0)`)
+    .call(
+      d3
+        .axisRight(y)
+        .ticks(ticks, typeof tickFormat === "string" ? tickFormat : undefined)
+        .tickFormat(typeof tickFormat === "function" ? tickFormat : undefined)
+        .tickSize(tickSize)
+        .tickValues(tickValues)
+    )
+    .call(tickAdjust)
+    .call((g) => g.select(".domain").remove())
+    .call((g) =>
+      g
+        .append("text")
+        .attr("x", marginLeft + marginRight - width)
+        .attr("y", marginTop - 6)
+        .attr("fill", "currentColor")
+        .attr("text-anchor", "start")
+        .attr("font-weight", "bold")
+        .attr("font-size", "15px")
+        .attr("class", "title")
+        .text(title)
+    );
+
+  return legend.node();
 }
 
-function Legend(color, {
-  title,
-tickSize = 5,
-width = 10 + tickSize, 
-height = 200,
-marginTop = 20,
-marginRight = 0,
-marginBottom = 10 + tickSize,
-marginLeft = 0,
-ticks = width / 65,
-tickFormat,
-tickValues
-} = {}) {
 
-
-const legend = d3.create("svg")
-  .attr("width", width)
-  .attr("height", height)
-  .attr("viewBox", [0, 0, width, height])
-  .style("overflow", "visible")
-  .style("display", "block");
-
-let tickAdjust = g => {
-g.selectAll(".tick line").attr("x1", marginLeft + marginRight - width)
-g.selectAll(".tick text").attr("font-size",12);      
-};
-let y;
-
-// Continuous
-if (color.invertExtent) {
-const thresholds
-    = color.thresholds ? color.thresholds() // scaleQuantize
-    : color.quantiles ? color.quantiles() // scaleQuantile
-    : color.domain(); // scaleThreshold
-
-const thresholdFormat
-    = tickFormat === undefined ? d => d
-    : typeof tickFormat === "string" ? d3.format(tickFormat)
-    : tickFormat;
-
-// x = d3.scaleLinear()
-//     .domain([-1, color.range().length - 1])
-//     .rangeRound([marginLeft, width - marginRight]);
-
-    y = d3.scaleLinear()
-    .domain([-1, color.range().length - 1])
-    .rangeRound([marginTop, height - marginBottom]);
-
-    legend.append("g")
-  .selectAll("rect")
-  .data(color.range())
-  .join("rect")
-    .attr("x", marginLeft)
-    .attr("y", (d, i) => y(i - 1))
-    .attr("width", width - marginLeft - marginRight)
-    .attr("height", (d, i) => y(i) - y(i - 1))
-    .attr("fill", d => d);
-
-tickValues = d3.range(thresholds.length);
-tickFormat = i => thresholdFormat(thresholds[i], i);
-};
-
-legend.append("g")
-.attr("transform", `translate(${width - marginLeft},0)`)
-  .call(d3.axisRight(y)
-    .ticks(ticks, typeof tickFormat === "string" ? tickFormat : undefined)
-    .tickFormat(typeof tickFormat === "function" ? tickFormat : undefined)
-    .tickSize(tickSize)
-    .tickValues(tickValues))
-  .call(tickAdjust)
-  .call(g => g.select(".domain").remove())
-  .call(g => g.append("text")
-    .attr("x", marginLeft + marginRight - width )
-    .attr("y", marginTop- 6)
-    .attr("fill", "currentColor")
-    .attr("text-anchor", "start")
-    .attr("font-weight", "bold")
-    .attr("font-size","15px")
-    .attr("class", "title")
-    .text(title));
-
-return legend.node();
-}

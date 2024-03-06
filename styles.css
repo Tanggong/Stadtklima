@@ -21,14 +21,7 @@ body {
 
 
 #map-container{
-  position:relative;
   flex: 2;
-  display: flex;
-}
-
-#map{
-  height: 100%;
-  width: 100%;
 }
 
 #legend {
@@ -36,4 +29,12 @@ body {
   top:auto;
   bottom: 10%; /* Adjust top position as needed */
   right: 5em; /* Adjust right position as needed */
+}
+
+.text-with-halo {
+  /* Add a white text shadow to create a halo effect */
+  text-shadow: -1px -1px 0 white,  
+               1px -1px 0 white,
+               -1px 1px 0 white,
+               1px 1px 0 white;
 }
