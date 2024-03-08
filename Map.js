@@ -1,5 +1,5 @@
 // Define the SVG width and height by window size
-  
+
 adjustContainerSize();
 
 const width = document.getElementById("map-container").clientWidth;
@@ -31,7 +31,7 @@ var path = d3.geoPath().projection(projection);
 // Declare layers
 const lyr_base = map.append("g");
 const lyr_city = map.append("g");
-const lyr_mCity = map.append("g").attr("display","none");
+const lyr_mCity = map.append("g").attr("display", "none");
 const lyr_popUp = map.append("g");
 
 // Geojson File path
@@ -46,7 +46,8 @@ Promise.all(promises).then(function (data) {
   var base_map = data[1];
 
   // Append base map paths
-  lyr_base.selectAll("path")
+  lyr_base
+    .selectAll("path")
     .data(base_map.features)
     .enter()
     .append("path")
@@ -56,7 +57,8 @@ Promise.all(promises).then(function (data) {
     .attr("stroke", "grey");
 
   // Append city paths
-  lyr_city.selectAll("path")
+  lyr_city
+    .selectAll("path")
     .data(value_cities.features)
     .enter()
     .append("path")
@@ -74,29 +76,29 @@ Promise.all(promises).then(function (data) {
   ];
 
   // add point to milion cities, before click, it shouldn't shown
-  const pnt_mCity = lyr_mCity.selectAll("circle")
-  .data(mCity)
-  .enter()
-  .append("circle")
-  .attr("cx", d => projection(d.coord)[0])
-  .attr("cy", d => projection(d.coord)[1])
-  .attr("r", 3)
-  .attr("stroke", "black");
+  const pnt_mCity = lyr_mCity
+    .selectAll("circle")
+    .data(mCity)
+    .enter()
+    .append("circle")
+    .attr("cx", (d) => projection(d.coord)[0])
+    .attr("cy", (d) => projection(d.coord)[1])
+    .attr("r", 3)
+    .attr("stroke", "black");
 
-    
-  const lbl_mCity = lyr_mCity.selectAll("text")
-  .data(mCity)
-  .enter()
-  .append("text")
-  .attr("text-anchor", "middle")
-  .attr("x", d => projection(d.coord)[0])
-  .attr("y", d => projection(d.coord)[1] - 8)
-  .text(d => d.gen)
-  .attr("font-size", "18px")
-  .attr("fill", "black")
-  .attr("font-weight", "bold")
-  .attr("class","text-with-halo");
-
+  const lbl_mCity = lyr_mCity
+    .selectAll("text")
+    .data(mCity)
+    .enter()
+    .append("text")
+    .attr("text-anchor", "middle")
+    .attr("x", (d) => projection(d.coord)[0])
+    .attr("y", (d) => projection(d.coord)[1] - 8)
+    .text((d) => d.gen)
+    .attr("font-size", "18px")
+    .attr("fill", "black")
+    .attr("font-weight", "bold")
+    .attr("class", "text-with-halo");
 
   // Append tooltip to show information
   const tooltip = lyr_popUp.append("g").attr("class", "tooltip");
@@ -121,8 +123,8 @@ Promise.all(promises).then(function (data) {
   //append legend
 
   map
-    .append("g")    
-    .attr("id","legend")
+    .append("g")
+    .attr("id", "legend")
     .attr("transform", `translate(${width / 1.2},${height / 1.5})`)
     .append(() =>
       Legend(color, {
@@ -149,16 +151,16 @@ Promise.all(promises).then(function (data) {
 
   function showMCity() {
     lyr_mCity.attr("display", "block");
-    pnt_mCity.attr("cx", d => projection(d.coord)[0])
-    .attr("cy", d => projection(d.coord)[1]);
-    lbl_mCity.attr("x", d => projection(d.coord)[0])
-    .attr("y", d => projection(d.coord)[1] - 8);
+    pnt_mCity
+      .attr("cx", (d) => projection(d.coord)[0])
+      .attr("cy", (d) => projection(d.coord)[1]);
+    lbl_mCity
+      .attr("x", (d) => projection(d.coord)[0])
+      .attr("y", (d) => projection(d.coord)[1] - 8);
   }
-  
+
   // Add event listener for window resize
   return window.addEventListener("resize", updateDimensions);
-
-
 });
 
 // define a pop up window
@@ -204,7 +206,7 @@ function popUp(g, name, value) {
 }
 
 // Function to update SVG dimensions when window is resized
-function updateDimensions() { 
+function updateDimensions() {
   adjustContainerSize();
   const winWidth = document.getElementById("map-container").clientWidth; // Get the width of the left container
   const winHeight = document.getElementById("map-container").clientHeight; // Get the height of the left container
@@ -228,12 +230,12 @@ function updateDimensions() {
   map.selectAll("#city").attr("d", path);
 
   // Update legend with the new projection
-  map.selectAll("#legend")
+  map
+    .selectAll("#legend")
     .attr("transform", `translate(${winWidth / 1.2},${winHeight / 1.5})`);
-  
+
   // disable mcity labels when resize
   lyr_mCity.attr("display", "none");
-
 }
 
 function adjustContainerSize() {
@@ -247,9 +249,9 @@ function adjustContainerSize() {
   } else {
     container.style.height = "auto";
     txtcontainer.style.overflow = "auto";
-    txtcontainer.style.justifyContent  = "start";
-  };
-};
+    txtcontainer.style.justifyContent = "start";
+  }
+}
 
 function Legend(
   color,
@@ -348,5 +350,3 @@ function Legend(
 
   return legend.node();
 }
-
-

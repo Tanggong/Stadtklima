@@ -38,3 +38,12 @@ body {
                -1px 1px 0 white,
                1px 1px 0 white;
 }
+
+#canvas2 {
+  width:100%;
+  height:100%;
+}
+#citymap-container {
+  width: 100%;
+  height:800px;
+}

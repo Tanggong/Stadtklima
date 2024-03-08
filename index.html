@@ -7,12 +7,18 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
+    <script src="https://unpkg.com/topojson@3"></script>
     <script src=" https://cdn.jsdelivr.net/npm/d3-geo@3.1.0/dist/d3-geo.min.js "></script>
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/ol@v9.0.0/ol.css"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/ol@v9.0.0/dist/ol.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
 
   <body>
-    <section id="canvas">
+    <!-- <section id="canvas">
       <div id="text-container">
         <h2>
           Profitieren Einwohner von Urbane Grüne Infrastruktur von der
@@ -41,12 +47,14 @@
       </div>
 
       <div id="map-container"></div>
-    </section>
-    </div>
+    </section> -->
+
     <section id="canvas2">
-      <svg id=""></svg>
+      <svg id="citymap-container"></svg>
     </section>
-    <script src="Map.js"></script>
+
+
+    <!-- <script src="Map.js"></script> -->
     <script src="map_City.js"></script>
   </body>
 </html>

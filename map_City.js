@@ -1,10 +1,52 @@
-// const width = document.getElementById("citymap-container").clientWidth;
-// const height = document.getElementById("citymap-container").clientHeight;
+// Create a new map instance
+var map = new ol.Map({
+  target: "citymap-container",
+  layers: [
+    (osm = new ol.layer.Tile({
+      source: new ol.source.OSM(), // Adding OpenStreetMap as the base layer
+    })),
+  ],
+  view: new ol.View({
+    center: ol.proj.fromLonLat([13.3777, 52.5182]), // Center the map at (0, 0)
+    zoom: 11, // Initial zoom level
+    projection: "EPSG:3857",
+  }),
+});
 
+function styleFunction(feature) {
+  let colors = d3.scaleThreshold(
+    [20, 40, 60, 80],
+    ["#F0FADB", "#C6EC79", "#97CD89", "#33A5F5", "#0970B9"]
+  );
 
-// // Create the SVG element
-// var map = d3
-//   .select("#map")
-//   .append("svg")
-//   .attr("width", width)
-//   .attr("height", height);
+  let stroke = new ol.style.Stroke({ color: "white", width: 0.1 });
+  let value = feature.getProperties().CCA_puf;
+  let fill = new ol.style.Fill({ color: colors(value) });
+  let style = new ol.style.Style({ stroke: stroke, fill: fill });
+  return style;
+}
+
+// Load your TopoJSON data
+fetch("geodata/Berlin.json")
+  .then((response) => response.json())
+  .then((data) => {
+    // Convert TopoJSON to GeoJSON
+    var geojsonFormat = new ol.format.TopoJSON();
+    var features = geojsonFormat.readFeatures(data, {
+      dataProjection: "EPSG:4326",
+      featureProjection: "EPSG:3857",
+    });
+    // Create a vector source and layer
+    var ccaSource = new ol.source.Vector({
+      features: features,
+    });
+    var ccaLayer = new ol.layer.Vector({
+      source: ccaSource,
+      style: styleFunction,
+    });
+    ccaLayer.setOpacity(0.8);
+    osm.setOpacity(0.5);
+
+    // Add the vector layer to the map
+    map.addLayer(ccaLayer);
+  });
