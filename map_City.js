@@ -1,4 +1,4 @@
-export function renderCityMap(city, center,canvas) {
+export function renderCityMap(city, center, canvas) {
   // Create a new map instance
 
   const container = document.getElementById(canvas);
@@ -36,7 +36,7 @@ export function renderCityMap(city, center,canvas) {
 
   var file = "geodata/" + city + ".json";
   // Load your TopoJSON data
-  fetch("geodata/Berlin.json")
+  fetch(file)
     .then((response) => response.json())
     .then((data) => {
       // Convert TopoJSON to GeoJSON

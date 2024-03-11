@@ -137,8 +137,11 @@ Promise.all(promises).then(function (data) {
   });
   // Add Click event to jump to milion city
 
-  poly_mCity.on("click", function(d) {
-    // console.log(d.properties.GEN);
+  poly_mCity.on("click", function(event, d) {
+
+    const city = d.properties.GEN;
+    const center = getCenter(city, mCity);
+    renderCityMap(city,center,"canvas2")
     jumpToCity("canvas2");
   });
   lyr_mCity.on("click", function() {
@@ -405,4 +408,14 @@ function Legend(
     );
 
   return legend.node();
+}
+
+//get center from milion city list
+function getCenter(cityName, citylist) {
+  for (let i = 0; i < citylist.length; i++) {
+    if (citylist[i].gen === cityName) {
+      return citylist[i].coord;
+    }
+  }
+  return null;
 }
