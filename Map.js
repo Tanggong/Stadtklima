@@ -1,3 +1,5 @@
+import { renderCityMap } from "/map_City.js";
+
 // Define the SVG width and height by window size
 
 adjustContainerSize();
@@ -5,6 +7,15 @@ adjustContainerSize();
 const width = document.getElementById("map-container").clientWidth;
 const height = document.getElementById("map-container").clientHeight;
 
+
+  // the list of milion cities
+  const mCity = [
+    { gen: "Berlin", coord: [13.3777, 52.5182] },
+    { gen: "Hamburg", coord: [9.992, 53.5502] },
+    { gen: "München", coord: [11.5755, 48.1372] },
+    { gen: "Köln", coord: [6.9583, 50.9413] },
+  ];
+  
 // Create the SVG element
 var map = d3
   .select("#map-container")
@@ -25,13 +36,16 @@ var color = d3.scaleThreshold(
   ["#f5d300", "#ccc40b", "#22942c", "#007c6e", "#0089b9"]
 );
 
+
+
+
 // Create a path generator
 var path = d3.geoPath().projection(projection);
 
 // Declare layers
 const lyr_base = map.append("g");
 const lyr_city = map.append("g");
-const lyr_mCity = map.append("g").attr("display", "none");
+const lyr_mCity = map.append("g").attr("display", "none").attr("id","mCity");
 const lyr_popUp = map.append("g");
 
 // Geojson File path
@@ -67,13 +81,7 @@ Promise.all(promises).then(function (data) {
     .attr("fill", (d) => color(d.properties.SUM_EW_Ant))
     .attr("title", "1");
 
-  // the list of milion cities
-  const mCity = [
-    { gen: "Berlin", coord: [13.3777, 52.5182] },
-    { gen: "Hamburg", coord: [9.992, 53.5502] },
-    { gen: "München", coord: [11.5755, 48.1372] },
-    { gen: "Köln", coord: [6.9583, 50.9413] },
-  ];
+
 
   // add point to milion cities, before click, it shouldn't shown
   const pnt_mCity = lyr_mCity
@@ -93,15 +101,53 @@ Promise.all(promises).then(function (data) {
     .append("text")
     .attr("text-anchor", "middle")
     .attr("x", (d) => projection(d.coord)[0])
-    .attr("y", (d) => projection(d.coord)[1] - 8)
+    .attr("y", (d) => projection(d.coord)[1] - 10)
     .text((d) => d.gen)
     .attr("font-size", "18px")
     .attr("fill", "black")
     .attr("font-weight", "bold")
     .attr("class", "text-with-halo");
 
+  // filter polygon of the million city
+  const mCityNames = mCity.map((mCity) => mCity.gen);
+
+  const poly_mCity = map.selectAll("#city").filter(d => mCityNames.includes(d.properties.GEN));
+
+  // as milion cities are clickable, so sho
+  poly_mCity
+  .transition()
+  .duration(200) // Set transition duration (optional)
+  .attr("transform", (d) => "translate(" + -2 + "," + -2 + ")") // Shift polygon
+  .each(function (d) {
+    // Create a single filter element within the transition (shared for all)
+    const filter = d3
+      .select(this.parentNode)
+      .append("filter") // Append to parent group
+      .attr("id", "highlightShadow"); // Use a single ID
+
+    filter
+      .append("feDropShadow")
+      .attr("dx", 2) // Adjust shadow offset
+      .attr("dy", 2)
+      .attr("blur", 4) // Adjust shadow blur
+      .attr("flood-color", "black");
+
+    // Apply the filter with the same ID to all highlighted paths
+    d3.select(this).attr("filter", "url(#highlightShadow)");
+  });
+  // Add Click event to jump to milion city
+
+  poly_mCity.on("click", function(d) {
+    // console.log(d.properties.GEN);
+    jumpToCity("canvas2");
+  });
+  lyr_mCity.on("click", function() {
+    jumpToCity("canvas2");
+  });
+
   // Append tooltip to show information
   const tooltip = lyr_popUp.append("g").attr("class", "tooltip");
+
 
   // Add mouse listener to display hover effect
   map
@@ -149,6 +195,7 @@ Promise.all(promises).then(function (data) {
   // Show Million Cities if tag is clicked
   document.getElementById("tag_MCity").addEventListener("click", showMCity);
 
+  // Function to show the annotation of million cities
   function showMCity() {
     lyr_mCity.attr("display", "block");
     pnt_mCity
@@ -156,12 +203,21 @@ Promise.all(promises).then(function (data) {
       .attr("cy", (d) => projection(d.coord)[1]);
     lbl_mCity
       .attr("x", (d) => projection(d.coord)[0])
-      .attr("y", (d) => projection(d.coord)[1] - 8);
+      .attr("y", (d) => projection(d.coord)[1] - 10);
   }
+
+
+
 
   // Add event listener for window resize
   return window.addEventListener("resize", updateDimensions);
 });
+
+// scoll to next canvas and render city map
+function jumpToCity(sectionId) {
+  // renderCityMap("Berlin","canvas2");
+  const targetSection = document.getElementById(sectionId);
+    targetSection.scrollIntoView({ behavior: "smooth" });};
 
 // define a pop up window
 function popUp(g, name, value) {
