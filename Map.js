@@ -49,7 +49,7 @@ const lyr_mCity = map.append("g").attr("display", "none").attr("id","mCity");
 const lyr_popUp = map.append("g");
 
 // Geojson File path
-const files = ["CCA_80_u_mehr_Ant_Ew_vg_25_GEM.geojson", "Germany.geojson"];
+const files = ["geodata/CCA_80_u_mehr_Ant_Ew_vg_25_GEM.geojson", "geodata/Germany.geojson"];
 
 let promises = [];
 
