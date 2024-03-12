@@ -45,7 +45,7 @@ var path = d3.geoPath().projection(projection);
 // Declare layers
 const lyr_base = map.append("g");
 const lyr_city = map.append("g");
-const lyr_mCity = map.append("g").attr("display", "none").attr("id","mCity");
+const lyr_mCity = map.selectAll("g").data(mCity).enter().append("g").attr("display", "none").attr("id","mCity");
 const lyr_popUp = map.append("g");
 
 // Geojson File path
@@ -83,35 +83,12 @@ Promise.all(promises).then(function (data) {
 
 
 
-  // add point to milion cities, before click, it shouldn't shown
-  const pnt_mCity = lyr_mCity
-    .selectAll("circle")
-    .data(mCity)
-    .enter()
-    .append("circle")
-    .attr("cx", (d) => projection(d.coord)[0])
-    .attr("cy", (d) => projection(d.coord)[1])
-    .attr("r", 3)
-    .attr("stroke", "black");
 
-  const lbl_mCity = lyr_mCity
-    .selectAll("text")
-    .data(mCity)
-    .enter()
-    .append("text")
-    .attr("text-anchor", "middle")
-    .attr("x", (d) => projection(d.coord)[0])
-    .attr("y", (d) => projection(d.coord)[1] - 10)
-    .text((d) => d.gen)
-    .attr("font-size", "18px")
-    .attr("fill", "black")
-    .attr("font-weight", "bold")
-    .attr("class", "text-with-halo");
 
   // filter polygon of the million city
   const mCityNames = mCity.map((mCity) => mCity.gen);
 
-  const poly_mCity = map.selectAll("#city").filter(d => mCityNames.includes(d.properties.GEN));
+  const poly_mCity = lyr_city.selectAll("#city").filter(d => mCityNames.includes(d.properties.GEN));
 
   // as milion cities are clickable, so sho
   poly_mCity
@@ -141,10 +118,39 @@ Promise.all(promises).then(function (data) {
 
     const city = d.properties.GEN;
     const center = getCenter(city, mCity);
-    renderCityMap(city,center,"canvas2")
+    renderCityMap(city,center,"canvas2");
     jumpToCity("canvas2");
   });
-  lyr_mCity.on("click", function() {
+
+    // add point to milion cities, before click, it shouldn't shown
+    const pnt_mCity = lyr_mCity
+    .selectAll("circle")
+    .data(mCity)
+    .enter()
+    .append("circle")
+    .attr("cx", (d) => projection(d.coord)[0])
+    .attr("cy", (d) => projection(d.coord)[1])
+    .attr("r", 3)
+    .attr("stroke", "black");
+
+  const lbl_mCity = lyr_mCity
+    .selectAll("text")
+    .data(mCity)
+    .enter()
+    .append("text")
+    .attr("text-anchor", "middle")
+    .attr("x", (d) => projection(d.coord)[0])
+    .attr("y", (d) => projection(d.coord)[1] - 10)
+    .text((d) => d.gen)
+    .attr("font-size", "18px")
+    .attr("fill", "black")
+    .attr("font-weight", "bold")
+    .attr("class", "text-with-halo");
+    
+  lyr_mCity.on("click", function(event, d) {
+    const city = d.gen;
+    const center = d.coord;
+    renderCityMap(city,center,"canvas2");
     jumpToCity("canvas2");
   });
 
@@ -173,7 +179,7 @@ Promise.all(promises).then(function (data) {
 
   map
     .append("g")
-    .attr("id", "legend")
+    .attr("class", "legend")
     .attr("transform", `translate(${width / 1.2},${height / 1.5})`)
     .append(() =>
       Legend(color, {
@@ -208,8 +214,6 @@ Promise.all(promises).then(function (data) {
       .attr("x", (d) => projection(d.coord)[0])
       .attr("y", (d) => projection(d.coord)[1] - 10);
   }
-
-
 
 
   // Add event listener for window resize
@@ -312,14 +316,14 @@ function adjustContainerSize() {
   }
 }
 
-function Legend(
+export function Legend(
   color,
   {
     title,
     tickSize = 5,
     width = 10 + tickSize,
     height = 200,
-    marginTop = 20,
+    marginTop = 30,
     marginRight = 0,
     marginBottom = 10 + tickSize,
     marginLeft = 0,
@@ -338,7 +342,7 @@ function Legend(
 
   let tickAdjust = (g) => {
     g.selectAll(".tick line").attr("x1", marginLeft + marginRight - width);
-    g.selectAll(".tick text").attr("font-size", 12);
+    g.selectAll(".tick text").attr("font-size", 15).attr("font-family", "Segoe UI");
   };
   let y;
 
@@ -363,7 +367,7 @@ function Legend(
 
     y = d3
       .scaleLinear()
-      .domain([-1, color.range().length - 1])
+      .domain([-1, color.range().length -1])
       .rangeRound([marginTop, height - marginBottom]);
 
     legend
@@ -391,6 +395,7 @@ function Legend(
         .tickFormat(typeof tickFormat === "function" ? tickFormat : undefined)
         .tickSize(tickSize)
         .tickValues(tickValues)
+        
     )
     .call(tickAdjust)
     .call((g) => g.select(".domain").remove())
@@ -398,11 +403,11 @@ function Legend(
       g
         .append("text")
         .attr("x", marginLeft + marginRight - width)
-        .attr("y", marginTop - 6)
+        .attr("y", marginTop - 10)
         .attr("fill", "currentColor")
         .attr("text-anchor", "start")
         .attr("font-weight", "bold")
-        .attr("font-size", "15px")
+        .attr("font-size", "16px")
         .attr("class", "title")
         .text(title)
     );

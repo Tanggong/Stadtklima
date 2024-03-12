@@ -24,11 +24,11 @@ body {
   flex: 2;
 }
 
-#legend {
-  position: absolute; /* Position the legend absolutely */
+.legend {
+  position: absolute;
   top:auto;
-  bottom: 10%; /* Adjust top position as needed */
-  right: 5em; /* Adjust right position as needed */
+  bottom: 10%;
+  right: 5em; 
 }
 
 .text-with-halo {
@@ -39,12 +39,16 @@ body {
                1px 1px 0 white;
 }
 
-/* #canvas2 {
-  width:100%;
-  height:100%;
+#canvas2 {
+  width: 100%;
   margin-right: 20%;
-} */
+  display: flex;
+}
+
 #citymap-container {
   width: 80%;
   height:100%;
+}
+#citymap-sidebar{
+  height: 100%;
 }
