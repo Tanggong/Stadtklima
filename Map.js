@@ -94,7 +94,8 @@ Promise.all(promises).then(function (data) {
   poly_mCity
   .transition()
   .duration(200) // Set transition duration (optional)
-  .attr("transform", (d) => "translate(" + -2 + "," + -2 + ")") // Shift polygon
+  .attr("transform", (d) => "translate(" + -1 + "," + -1 + ")") // Shift polygon
+  .attr("cursor","pointer")
   .each(function (d) {
     // Create a single filter element within the transition (shared for all)
     const filter = d3
@@ -104,9 +105,9 @@ Promise.all(promises).then(function (data) {
 
     filter
       .append("feDropShadow")
-      .attr("dx", 2) // Adjust shadow offset
-      .attr("dy", 2)
-      .attr("blur", 4) // Adjust shadow blur
+      .attr("dx", 3) // Adjust shadow offset
+      .attr("dy", 3)
+      .attr("blur", 2) // Adjust shadow blur
       .attr("flood-color", "black");
 
     // Apply the filter with the same ID to all highlighted paths
@@ -187,19 +188,18 @@ Promise.all(promises).then(function (data) {
       })
     );
 
-  // //enable zoom
-  // const zoom = true;
+    // add a button to show attributes
+    map
+    .append("i")
+    .attr("position","absolute")
+    .attr("width","45")
+    .attr("height","45")
+    .attr("fill","#86BC27")
+    .attr("stroke","white")
+    .attr("data-feather", "info");
 
-  // var zoomable = d3
-  //   .zoom()
-  //   .scaleExtent([1, 2])
-  //   .on("zoom", function (event) {
-  //     map.selectAll("path").attr("transform", event.transform);
-  //     tooltip.attr("transform", `d3.pointer(event, this)`); // Update tooltip position
-  //   });
-
-  // optional zoom effect, tooltips location wrong after zoomed
-  // map.call(zoomable);
+    // info icon
+    feather.replace();
 
   // Show Million Cities if tag is clicked
   document.getElementById("tag_MCity").addEventListener("click", showMCity);
@@ -294,7 +294,7 @@ function updateDimensions() {
 
   // Update legend with the new projection
   map
-    .selectAll("#legend")
+    .selectAll(".legend")
     .attr("transform", `translate(${winWidth / 1.2},${winHeight / 1.5})`);
 
   // disable mcity labels when resize
@@ -423,4 +423,18 @@ function getCenter(cityName, citylist) {
     }
   }
   return null;
+}
+
+
+function infoWindow(g){
+  g.append("span")
+  .text("Geodaten: LBM-DE 2018 © GeoBasis-DE/BKG 2020* \n" +
+  "Stadtgrünraster 2018 © lÖR-Monitor 2022, \n" +
+  "© Copernicus 2021 \n" +
+  "VG250 e GeoBasis-DE/BKG 2018, \n" +
+  "Grünvolumen Dresden 2017 © Landeshauptstadt Dresden 2019, \n" +
+  "Grünvolumen Leipzig, Bielefeld, Potsdam 2018, Hanau 2017 © LUP 2020 \n" +
+  "Gebietsstand vom 31.12.2016, \n" +
+  "© EuroGeographics 2017 \n" +
+  "Karte: S. Meier, R.-U.Syrbe, lÖR 2022");
 }
