@@ -52,3 +52,39 @@ body {
 #citymap-sidebar{
   height: 100%;
 }
+
+
+
+#bnt_info{
+  position:absolute;
+  font-variation-settings:
+  'FILL' 1,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24;
+  color: #70A401;
+  font-size: 45px;
+  cursor: default;
+}
+
+#info_box{
+  visibility: hidden;
+  width: 380px;
+  word-wrap: break-word;
+  background-color: #70a401f7;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 10px 10px;
+  font-family: "Segoe UI";
+  font-size: 13px;
+
+  /* Position the tooltip */
+  position: absolute;
+  left:5px;
+  z-index: 1;
+}
+
+#bnt_info:hover #info_box{
+  visibility: visible;
+}

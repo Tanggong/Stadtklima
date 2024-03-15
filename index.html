@@ -9,16 +9,15 @@
     ></script>
     <script src="https://unpkg.com/topojson@3"></script>
     <script src=" https://cdn.jsdelivr.net/npm/d3-geo@3.1.0/dist/d3-geo.min.js "></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <link
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />    <link
     rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/ol@v9.0.0/ol.css"
-  />
+    href="https://cdn.jsdelivr.net/npm/ol@v9.0.0/ol.css"/>
   <script src="https://cdn.jsdelivr.net/npm/ol@v9.0.0/dist/ol.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
 
   <body>
+    
     <section id="canvas">
       <div id="text-container">
         <h2>
@@ -47,7 +46,25 @@
         <big>Auf <u id="tag_MCity" style="cursor: pointer;"><em>Millionenstädte</em></u> klicken,um die klimatischen Auswirkungen in der Stadt anzuschauen.</big>
       </div>
 
-      <div id="map-container"></div>
+      <div id="map-container">
+        <span class="material-symbols-outlined" id="bnt_info">
+          <span>info</span>
+          
+          <span id="info_box">Geodaten: LBM-DE 2018 © GeoBasis-DE/BKG 2020* <br>
+            Stadtgrünraster 2018 © IÖR-Monitor 2022 <br>
+            © Copernicus 2021 <br>
+            VG250 e GeoBasis-DE/BKG 2018 <br>
+            Grünvolumen Dresden 2017 © Landeshauptstadt Dresden 2019 <br>
+            Grünvolumen Leipzig, Bielefeld, Potsdam 2018, Hanau 2017 © LUP 2020 <br>
+            Gebietsstand vom 31.12.2016 <br>
+            © EuroGeographics 2017 <br>
+            Karte: S. Meier, R.-U.Syrbe, IÖR 2022 <br>
+            <a href="http://sg.geodatenzentrum.de/web_public/nutzungsbedingungen.pdf"><small>*Nutzungsbedingungen</small></a> 
+          </span>
+          </span>
+        </div>
+        
+        
     </section>
 
     <section id="canvas2">
