@@ -6,11 +6,18 @@ export function renderCityMap(city, center, canvas) {
   const container = document.getElementById(canvas);
   const sidebarContainer =document.getElementById("citymap-sidebar");
 
+  // turn canvas to visible
+  container.style.visibility = "visible";
+
   //if container is not empty, first clear the content
-  if(mapcontainer != ""){
-    mapcontainer.innerHTML = "";
-    sidebarContainer.innerHTML = "";
+  function clearCanvas() {
+    if(mapcontainer != ""){
+      mapcontainer.innerHTML = "";
+      sidebarContainer.innerHTML = "";
+    };
   };
+
+    clearCanvas()
 
     // set container height
 
@@ -68,7 +75,7 @@ export function renderCityMap(city, center, canvas) {
         source: ccaSource,
         style: styleFunction,
       });
-      ccaLayer.setOpacity(0.8);
+      ccaLayer.setOpacity(0.7);
       osm.setOpacity(0.5);
 
       
@@ -96,6 +103,12 @@ export function renderCityMap(city, center, canvas) {
             title: "Kühlkapazitätspunkte",
           })
         );
-
+    
+    // add event listener for close button
+    const closeButton = document.getElementById("close-button");
+    closeButton.addEventListener("click", () => {
+      container.style.visibility = "hidden";
+      clearCanvas();
+    });
 }
 

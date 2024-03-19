@@ -131,7 +131,6 @@ function renderMap(promises){
       const city = d.properties.GEN;
       const center = getCenter(city, mCity);
       renderCityMap(city,center,"canvas2");
-      jumpToCity("canvas2");
     });
   
       // add point to milion cities, before click, it shouldn't shown
@@ -143,6 +142,7 @@ function renderMap(promises){
       .attr("cx", (d) => projection(d.coord)[0])
       .attr("cy", (d) => projection(d.coord)[1])
       .attr("r", 3)
+      .attr("cursor","pointer")
       .attr("stroke", "black");
   
     const lbl_mCity = lyr_mCity
@@ -157,13 +157,13 @@ function renderMap(promises){
       .attr("font-size", "18px")
       .attr("fill", "black")
       .attr("font-weight", "bold")
+      .attr("cursor","pointer")
       .attr("class", "text-with-halo");
       
     lyr_mCity.on("click", function(event, d) {
       const city = d.gen;
       const center = d.coord;
       renderCityMap(city,center,"canvas2");
-      jumpToCity("canvas2");
     });
   
     // Append tooltip to show information
@@ -219,11 +219,7 @@ function renderMap(promises){
   });
 }
 
-// scoll to next canvas and render city map
-function jumpToCity(sectionId) {
-  // renderCityMap("Berlin","canvas2");
-  const targetSection = document.getElementById(sectionId);
-    targetSection.scrollIntoView({ behavior: "smooth" });};
+
 
 // define a pop up window
 function popUp(g, name, value) {
@@ -318,6 +314,7 @@ function adjustContainerSize() {
   };
 }
 
+// legen function from https://observablehq.com/@d3/color-legend
 export function Legend(
   color,
   {
@@ -370,13 +367,13 @@ export function Legend(
 
     y = d3
       .scaleLinear()
-      .domain([-1, color.range().length -1])
+      .domain([-1,color.range().length -1])
       .rangeRound([marginTop, height - marginBottom]);
 
     legend
       .append("g")
       .selectAll("rect")
-      .data(color.range())
+      .data(color.range().reverse())
       .join("rect")
       .attr("x", marginLeft)
       .attr("y", (d, i) => y(i - 1))
@@ -384,7 +381,7 @@ export function Legend(
       .attr("height", (d, i) => y(i) - y(i - 1))
       .attr("fill", (d) => d);
 
-    tickValues = d3.range(thresholds.length);
+    tickValues = d3.range(thresholds.reverse().length);
     tickFormat = (i) => thresholdFormat(thresholds[i], i);
   }
 
