@@ -55,161 +55,169 @@ let promises = [];
 
 // Load each geojson file, geojson transfered and simplified from shp in QGIS
 files.forEach((url) => promises.push(d3.json(url)));
-Promise.all(promises).then(function (data) {
-  var value_cities = data[0];
-  var base_map = data[1];
 
-  // Append base map paths
-  lyr_base
-    .selectAll("path")
-    .data(base_map.features)
-    .enter()
-    .append("path")
-    .attr("id", "base-map")
-    .attr("d", path)
-    .attr("fill", "transparent")
-    .attr("stroke", "grey");
+renderMap(promises);
 
-  // Append city paths
-  lyr_city
-    .selectAll("path")
-    .data(value_cities.features)
-    .enter()
-    .append("path")
-    .attr("id", "city")
-    .attr("d", path)
-    .attr("fill", (d) => color(d.properties.SUM_EW_Ant))
-    .attr("title", "1");
+// Add event listener for window resize
+window.addEventListener("resize", updateDimensions());
+
+function renderMap(promises){
+  Promise.all(promises).then(function (data) {
+
+    adjustContainerSize();
 
 
-
-
-
-  // filter polygon of the million city
-  const mCityNames = mCity.map((mCity) => mCity.gen);
-
-  const poly_mCity = lyr_city.selectAll("#city").filter(d => mCityNames.includes(d.properties.GEN));
-
-  // as milion cities are clickable, so sho
-  poly_mCity
-  .transition()
-  .duration(200) // Set transition duration (optional)
-  .attr("transform", (d) => "translate(" + -1 + "," + -1 + ")") // Shift polygon
-  .attr("cursor","pointer")
-  .each(function (d) {
-    // Create a single filter element within the transition (shared for all)
-    const filter = d3
-      .select(this.parentNode)
-      .append("filter") // Append to parent group
-      .attr("id", "highlightShadow"); // Use a single ID
-
-    filter
-      .append("feDropShadow")
-      .attr("dx", 3) // Adjust shadow offset
-      .attr("dy", 3)
-      .attr("blur", 2) // Adjust shadow blur
-      .attr("flood-color", "black");
-
-    // Apply the filter with the same ID to all highlighted paths
-    d3.select(this).attr("filter", "url(#highlightShadow)");
-  });
-  // Add Click event to jump to milion city
-
-  poly_mCity.on("click", function(event, d) {
-
-    const city = d.properties.GEN;
-    const center = getCenter(city, mCity);
-    renderCityMap(city,center,"canvas2");
-    jumpToCity("canvas2");
-  });
-
-    // add point to milion cities, before click, it shouldn't shown
-    const pnt_mCity = lyr_mCity
-    .selectAll("circle")
-    .data(mCity)
-    .enter()
-    .append("circle")
-    .attr("cx", (d) => projection(d.coord)[0])
-    .attr("cy", (d) => projection(d.coord)[1])
-    .attr("r", 3)
-    .attr("stroke", "black");
-
-  const lbl_mCity = lyr_mCity
-    .selectAll("text")
-    .data(mCity)
-    .enter()
-    .append("text")
-    .attr("text-anchor", "middle")
-    .attr("x", (d) => projection(d.coord)[0])
-    .attr("y", (d) => projection(d.coord)[1] - 10)
-    .text((d) => d.gen)
-    .attr("font-size", "18px")
-    .attr("fill", "black")
-    .attr("font-weight", "bold")
-    .attr("class", "text-with-halo");
-    
-  lyr_mCity.on("click", function(event, d) {
-    const city = d.gen;
-    const center = d.coord;
-    renderCityMap(city,center,"canvas2");
-    jumpToCity("canvas2");
-  });
-
-  // Append tooltip to show information
-  const tooltip = lyr_popUp.append("g").attr("class", "tooltip");
-  // const infoWindow = lyr_popUp.append("g").attr("id", "infoBox");
-
-
-  // Add mouse listener to display hover effect
-  map
-    .selectAll("#city")
-    .on("touchmove mouseover mousemove", function (event, d) {
-      tooltip.call(popUp, `${d.properties.GEN}`, `${d.properties.SUM_EW_Ant}`);
-      tooltip.attr("transform", `translate(${d3.pointer(event, this)})`);
-
-      d3.selectAll("#city").transition().duration(200).style("opacity", 0.5);
-      d3.select(this).transition().duration(200).style("opacity", 1);
-    })
-    .on("touchend mouseleave", function () {
-      tooltip.call(popUp, null);
-
-      d3.selectAll("#city").transition().duration(200).style("opacity", 0.8);
-      d3.select(this).transition().duration(200).style("stroke", null);
+    var value_cities = data[0];
+    var base_map = data[1];
+  
+    // Append base map paths
+    lyr_base
+      .selectAll("path")
+      .data(base_map.features)
+      .enter()
+      .append("path")
+      .attr("id", "base-map")
+      .attr("d", path)
+      .attr("fill", "transparent")
+      .attr("stroke", "grey");
+  
+    // Append city paths
+    lyr_city
+      .selectAll("path")
+      .data(value_cities.features)
+      .enter()
+      .append("path")
+      .attr("id", "city")
+      .attr("d", path)
+      .attr("fill", (d) => color(d.properties.SUM_EW_Ant))
+      .attr("title", "1");
+  
+  
+  
+  
+  
+    // filter polygon of the million city
+    const mCityNames = mCity.map((mCity) => mCity.gen);
+  
+    const poly_mCity = lyr_city.selectAll("#city").filter(d => mCityNames.includes(d.properties.GEN));
+  
+    // as milion cities are clickable, so sho
+    poly_mCity
+    .transition()
+    .duration(200) // Set transition duration (optional)
+    .attr("transform", (d) => "translate(" + -1 + "," + -1 + ")") // Shift polygon
+    .attr("cursor","pointer")
+    .each(function (d) {
+      // Create a single filter element within the transition (shared for all)
+      const filter = d3
+        .select(this.parentNode)
+        .append("filter") // Append to parent group
+        .attr("id", "highlightShadow"); // Use a single ID
+  
+      filter
+        .append("feDropShadow")
+        .attr("dx", 3) // Adjust shadow offset
+        .attr("dy", 3)
+        .attr("blur", 2) // Adjust shadow blur
+        .attr("flood-color", "black");
+  
+      // Apply the filter with the same ID to all highlighted paths
+      d3.select(this).attr("filter", "url(#highlightShadow)");
     });
-
-  //append legend
-
-  map
-    .append("g")
-    .attr("class", "legend")
-    .attr("transform", `translate(${width / 1.2},${height / 1.5})`)
-    .append(() =>
-      Legend(color, {
-        title: "Anteil (%)",
-      })
-    );
-
-  // add a button to show attributes
-  document.getElementById("bnt_info").addEventListener("hover", infoBox());
-
-  // Show Million Cities if tag is clicked
-  document.getElementById("tag_MCity").addEventListener("click", showMCity);
-
-  // Function to show the annotation of million cities
-  function showMCity() {
-    lyr_mCity.attr("display", "block");
-    pnt_mCity
+    // Add Click event to jump to milion city
+  
+    poly_mCity.on("click", function(event, d) {
+  
+      const city = d.properties.GEN;
+      const center = getCenter(city, mCity);
+      renderCityMap(city,center,"canvas2");
+      jumpToCity("canvas2");
+    });
+  
+      // add point to milion cities, before click, it shouldn't shown
+      const pnt_mCity = lyr_mCity
+      .selectAll("circle")
+      .data(mCity)
+      .enter()
+      .append("circle")
       .attr("cx", (d) => projection(d.coord)[0])
-      .attr("cy", (d) => projection(d.coord)[1]);
-    lbl_mCity
+      .attr("cy", (d) => projection(d.coord)[1])
+      .attr("r", 3)
+      .attr("stroke", "black");
+  
+    const lbl_mCity = lyr_mCity
+      .selectAll("text")
+      .data(mCity)
+      .enter()
+      .append("text")
+      .attr("text-anchor", "middle")
       .attr("x", (d) => projection(d.coord)[0])
-      .attr("y", (d) => projection(d.coord)[1] - 10);
-  }
+      .attr("y", (d) => projection(d.coord)[1] - 10)
+      .text((d) => d.gen)
+      .attr("font-size", "18px")
+      .attr("fill", "black")
+      .attr("font-weight", "bold")
+      .attr("class", "text-with-halo");
+      
+    lyr_mCity.on("click", function(event, d) {
+      const city = d.gen;
+      const center = d.coord;
+      renderCityMap(city,center,"canvas2");
+      jumpToCity("canvas2");
+    });
+  
+    // Append tooltip to show information
+    const tooltip = lyr_popUp.append("g").attr("class", "tooltip");
+  
+  
+    // Add mouse listener to display hover effect
+    map
+      .selectAll("#city")
+      .on("touchmove mouseover mousemove", function (event, d) {
+        tooltip.call(popUp, `${d.properties.GEN}`, `${d.properties.SUM_EW_Ant}`);
+        tooltip.attr("transform", `translate(${d3.pointer(event, this)})`);
+  
+        d3.selectAll("#city").transition().duration(200).style("opacity", 0.5);
+        d3.select(this).transition().duration(200).style("opacity", 1);
+      })
+      .on("touchend mouseleave", function () {
+        tooltip.call(popUp, null);
+  
+        d3.selectAll("#city").transition().duration(200).style("opacity", 0.8);
+        d3.select(this).transition().duration(200).style("stroke", null);
+      });
 
+  
+      
+    map
+      .append("g")
+      .attr("class", "legend")
+      .attr("transform", `translate(${width / 1.2},${height / 1.5})`)
+      .append(() =>
+        Legend(color, {
+          title: "%",
+          text:"Anteil der Bevölkerung versorgt mit guter bis sehr guter Kühlkapazität"
+        })
+      );
+    
 
-  // Add event listener for window resize
-  return window.addEventListener("resize", updateDimensions);
-});
+    // Show Million Cities if tag is clicked
+    document.getElementById("tag_MCity").addEventListener("click", showMCity);
+  
+    // Function to show the annotation of million cities
+    function showMCity() {
+      lyr_mCity.attr("display", "block");
+      pnt_mCity
+        .attr("cx", (d) => projection(d.coord)[0])
+        .attr("cy", (d) => projection(d.coord)[1]);
+      lbl_mCity
+        .attr("x", (d) => projection(d.coord)[0])
+        .attr("y", (d) => projection(d.coord)[1] - 10);
+    };
+  
+  
+  });
+}
 
 // scoll to next canvas and render city map
 function jumpToCity(sectionId) {
@@ -277,11 +285,8 @@ function updateDimensions() {
   // Update path generator with the new projection
   path.projection(projection);
 
-  // Update base map paths with the new projection
-  map.selectAll("#base-map").attr("d", path);
-
-  // Update city paths with the new projection
-  map.selectAll("#city").attr("d", path);
+  // Update map paths with the new projection
+  map.selectAll("path").attr("d", path);
 
   // Update legend with the new projection
   map
@@ -290,7 +295,7 @@ function updateDimensions() {
 
   // disable mcity labels when resize
   lyr_mCity.attr("display", "none");
-}
+};
 
 function adjustContainerSize() {
   const container = document.getElementById("canvas");
@@ -298,13 +303,19 @@ function adjustContainerSize() {
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
 
-  if (windowWidth * windowHeight > 650000) {
-    container.style.height = "100%";
+  if (windowWidth <= 768) {
+    container.style.flexDirection = "vertical"; // Vertical for mobile
+  } else {
+    container.style.flexDirection = "horizontal"; // Horizontal for larger screens
+  };
+
+  if (windowWidth > 1024) {
+    container.style.height = "100%"
   } else {
     container.style.height = "auto";
-    txtcontainer.style.overflow = "auto";
+    txtcontainer.style.overflow = "none";
     txtcontainer.style.justifyContent = "start";
-  }
+  };
 }
 
 export function Legend(
@@ -321,6 +332,7 @@ export function Legend(
     ticks = width / 65,
     tickFormat,
     tickValues,
+    text
   } = {}
 ) {
   const legend = d3
@@ -401,6 +413,20 @@ export function Legend(
         .attr("font-size", "16px")
         .attr("class", "title")
         .text(title)
+    )
+    .call((g) =>
+      g
+        .append("foreignObject")
+        .attr("x", marginLeft + marginRight - width)
+        .attr("y", marginTop - 120)
+        .attr("width", 100)
+        .attr("height", 100)
+        .attr("fill", "currentColor")
+        .attr("text-anchor", "start")
+        .attr("font-weight", "bold")
+        .attr("font-size", "13px")
+        .attr("class", "title")
+        .text(text)
     );
 
   return legend.node();

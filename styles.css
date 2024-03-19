@@ -69,7 +69,7 @@ body {
 
 #info_box{
   visibility: hidden;
-  width: 380px;
+  width: 250px;
   word-wrap: break-word;
   background-color: #70a401f7;
   color: #fff;
@@ -81,7 +81,8 @@ body {
 
   /* Position the tooltip */
   position: absolute;
-  left:5px;
+  left:10px;
+  top:10px;
   z-index: 1;
 }
 
