@@ -43,7 +43,7 @@ export function renderCityMap(city, center, canvas) {
     //set color palette
     let colors = d3.scaleThreshold(
       [20, 40, 60, 80],
-      ["#F0FADB", "#C6EC79", "#97CD89", "#33A5F5", "#0970B9"]
+      ['#fdee86', '#a7e159', '#75c676', '#3faa95', '#0089b9']
     );
 
   //set styling function for choropleth map

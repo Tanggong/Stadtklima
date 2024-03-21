@@ -33,7 +33,7 @@ var projection = d3
 // set the color palette (ioer secondary colors)
 var color = d3.scaleThreshold(
   [55, 65, 75, 85],
-  ["#f5d300", "#ccc40b", "#22942c", "#007c6e", "#0089b9"]
+  ['#f5d300', '#bcc714', '#7fb92e', '#4ba567', '#0089b9']
 );
 
 
