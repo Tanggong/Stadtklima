@@ -17,28 +17,37 @@ export function renderCityMap(city, center, canvas) {
     };
   };
 
-    clearCanvas()
+    clearCanvas();
 
     // set container height
 
     container.style.height = "100%";
 
-  //set background map
-  const osm = new ol.layer.Tile({
-    source: new ol.source.OSM(), // Adding OpenStreetMap as the base layer
+  // //set background map
+  // const osm = new ol.layer.Tile({
+  //   source: new ol.source.OSM(), // Adding OpenStreetMap as the base layer
+  // });
+
+  // set background Map, using WMS TopPlusOpen
+  const base = new ol.layer.Tile({
+    source: new ol.source.TileWMS({
+        url:"https://sgx.geodatenzentrum.de/wms_topplus_open",
+        params: {'LAYERS': 'web_light_grau', 'TILED': true},
+    }) 
   });
 
   var Mcity_map = new ol.Map({
-    target: "citymap-container",
     layers: [
-      (osm),
+      base
     ],
     view: new ol.View({
       center: ol.proj.fromLonLat(center), // Center the map at (0, 0)
       zoom: 11, // Initial zoom level
       projection: "EPSG:3857",
     }),
+    target: "citymap-container",
   });
+  
 
     //set color palette
     let colors = d3.scaleThreshold(
@@ -75,8 +84,7 @@ export function renderCityMap(city, center, canvas) {
         source: ccaSource,
         style: styleFunction,
       });
-      ccaLayer.setOpacity(0.7);
-      osm.setOpacity(0.5);
+      ccaLayer.setOpacity(0.8);
 
       
       // Add the vector layer to the map
