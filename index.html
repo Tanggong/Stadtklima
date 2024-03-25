@@ -9,29 +9,29 @@
     ></script>
     <script src="https://unpkg.com/topojson@3"></script>
     <script src=" https://cdn.jsdelivr.net/npm/d3-geo@3.1.0/dist/d3-geo.min.js "></script>
-    <link
+    <script src=" https://cdn.jsdelivr.net/npm/ol-mapbox-style@12.2.1/dist/index.min.js "></script>    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />    <link
     rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/ol@v9.0.0/ol.css"
-  />
+    href="https://cdn.jsdelivr.net/npm/ol@v9.0.0/ol.css"/>
   <script src="https://cdn.jsdelivr.net/npm/ol@v9.0.0/dist/ol.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
 
   <body>
+    
     <section id="canvas">
       <div id="text-container">
         <h2>
-          Profitieren Einwohner von Urbane Grüne Infrastruktur von der
-          Hitzestressreduktion?
+          Kühlt urbane grüne Infrastruktur unsere Wohnviertel?
+          <!-- Profitieren Einwohner von Urbane Grüne Infrastruktur von der
+          Hitzestressreduktion? -->
         </h2>
         <p>
-          Auf der Basis bundesweit regelmäßig verfügbarer Geodaten wird für die
-          wichtigsten städtischen Oberflächentypen mithilfe der Baumkronen- und
-          Bodenbedeckung sowie unter Berücksichtigung der Flächengrößen und
-          Lagemerkmale ein spezifischer Kühlkapazitätswert bestimmt. Als
-          signifikante Temperaturveränderung durch Urbane Grüne Infrastruktur
-          wird die potenzielle Abkühlung von mindestens 2,1 K bewertet, was eine
-          überdurchschnittlich gute Kühlung repräsentiert.
+          Mithilfe regelmäßig verfügbarer Geodaten aus ganz Deutschland 
+          lässt sich die kühlende Wirkung verschiedener städtischer 
+          Flächen bestimmen. Dabei werden Baumkronen, Bodenbedeckung, 
+          Größe und Lage der Flächen berücksichtigt. Als besonders effektive 
+          Kühlung gilt eine potenzielle Temperaturabsenkung von mindestens 
+          2,1 Grad Celsius.
         </p>
         <p>
           Die Karte rechts zeigt den Anteil der Bevölkerung in 165 deutschen
@@ -44,17 +44,44 @@
           unmittelbaren Wohnumgebung profitieren.
         </p>
         <big>Auf <u id="tag_MCity" style="cursor: pointer;"><em>Millionenstädte</em></u> klicken,um die klimatischen Auswirkungen in der Stadt anzuschauen.</big>
-      </div>
+        <p><a href="https://ioer-fdz.de/oekosysteme-deutschland/oekosystemleistungen/lokale-klimaregulation-in-staedten">
+          Weitere Informationen zum Indikator 'Klimaregulation'
+          <span style="vertical-align: bottom;" class="material-symbols-outlined">
+          arrow_right_alt
+          </span></a></p></div>
 
-      <div id="map-container"></div>
+      <div id="map-container">
+        <span class="material-symbols-outlined" id="bnt_info">
+          <span>info</span>
+          
+          <span id="info_box"><p style="margin: 0 0 0.3em 0;">Geodaten: LBM-DE 2018<br> © GeoBasis-DE/BKG 2020* <br></p>
+            <p style="margin: 0 0 0.3em 0;">Stadtgrünraster 2018 © IÖR-Monitor 2022 </p>
+            © Copernicus 2021 <br>
+            <p style="margin: 0 0 0.3em 0;">VG250 © GeoBasis-DE/BKG 2018 </p>
+            <p style="margin: 0 0 0.3em 0;">Grünvolumen Dresden 2017 <br> © Landeshauptstadt Dresden 2019 </p>
+            <p style="margin: 0 0 0.3em 0;">Grünvolumen Leipzig, Bielefeld, <br>Potsdam 2018, Hanau 2017 <br>© LUP 2020 <br>
+            Gebietsstand vom 31.12.2016 </p>
+            <p style="margin: 0 0 0.3em 0;">© EuroGeographics 2017 <br></p>
+            Karte: S. Meier, R.-U.Syrbe, IÖR 2022 <br>
+            <a href="http://sg.geodatenzentrum.de/web_public/nutzungsbedingungen.pdf"><small>*Nutzungsbedingungen</small></a> 
+          </span>
+          </span>
+        </div>
+        
+        
     </section>
 
     <section id="canvas2">
+      <div id="basemap-attribution">Grundkarte:<a href="http://www.bkg.bund.de/">© Bundesamt für Kartographie und Geodäsie (2024)</a>, <a href="https://sgx.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf">Datenquellen</a></div>
       <div id="citymap-container"></div>
+      <div id="citymap-sidebar"></div>
+      <button id="close-button"><span id="icon-close" class="material-symbols-outlined">
+        close
+        </span></button>
     </section>
 
 
     <script src="Map.js" type="module"></script>
-    <script src="map_City.js"></script>
+    <script src="map_City.js" type="module"></script>
   </body>
 </html>
