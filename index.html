@@ -1,87 +1,99 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"
-      integrity="sha512-M7nHCiNUOwFt6Us3r8alutZLm9qMt4s9951uo8jqO4UwJ1hziseL6O3ndFyigx6+LREfZqnhHxYjKRJ8ZQ69DQ=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-    <script src="https://unpkg.com/topojson@3"></script>
-    <script src=" https://cdn.jsdelivr.net/npm/d3-geo@3.1.0/dist/d3-geo.min.js "></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js" integrity="sha512-zInFF17qBFVvvvFpIfeBzo7Tj7+rQxLeTJDmbxjBz5/zIr89YVbTNelNhdTT+/DCrxoVzBeUPVFJsczKbB7sew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />    <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/ol@v9.0.0/ol.css"/>
+
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"
+    integrity="sha512-M7nHCiNUOwFt6Us3r8alutZLm9qMt4s9951uo8jqO4UwJ1hziseL6O3ndFyigx6+LREfZqnhHxYjKRJ8ZQ69DQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://unpkg.com/topojson@3"></script>
+  <script src=" https://cdn.jsdelivr.net/npm/d3-geo@3.1.0/dist/d3-geo.min.js "></script>
   <script src="https://cdn.jsdelivr.net/npm/ol@v9.0.0/dist/ol.js"></script>
-    <link rel="stylesheet" type="text/css" href="styles.css" />
-  </head>
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.0.0/ol.css" />
+</head>
 
-  <body>
-    
-    <section id="canvas">
-      <div id="text-container">
-        <h2>
-          Kühlt urbane grüne Infrastruktur unsere Wohnviertel?
-          <!-- Profitieren Einwohner von Urbane Grüne Infrastruktur von der
+<body>
+  <section id="canvas">
+    <div id="text-container">
+      <h2>
+        Kühlt urbane grüne Infrastruktur unsere Wohnviertel?
+        <!-- Profitieren Einwohner von Urbane Grüne Infrastruktur von der
           Hitzestressreduktion? -->
-        </h2>
-        <p>
-          Mithilfe regelmäßig verfügbarer Geodaten aus ganz Deutschland 
-          lässt sich die kühlende Wirkung verschiedener städtischer 
-          Flächen bestimmen. Dabei werden Baumkronen, Bodenbedeckung, 
-          Größe und Lage der Flächen berücksichtigt. Als besonders effektive 
-          Kühlung gilt eine potenzielle Temperaturabsenkung von mindestens 
-          2,1 Grad Celsius.
-        </p>
-        <p>
-          Die Karte rechts zeigt den Anteil der Bevölkerung in 165 deutschen
-          Städten mit mehr als 50.000 Einwohnern in 2018, der durch Urbane Grüne
-          Infrastruktur mit guter bis sehr guter Kühlkapazität versorgt wird.
-        </p>
-        <p>
-          Insgesamt können 76 % der Bevölkerung in den 165 untersuchten
-          deutschen Städten von hohen oder sehr hohen Kühlkapazitäten in ihrer
-          unmittelbaren Wohnumgebung profitieren.
-        </p>
-        <big>Auf <u id="tag_MCity" style="cursor: pointer;"><em>Millionenstädte</em></u> klicken,um die klimatischen Auswirkungen in der Stadt anzuschauen.</big>
-        <p><a href="https://ioer-fdz.de/oekosysteme-deutschland/oekosystemleistungen/lokale-klimaregulation-in-staedten">
+      </h2>
+      <p>
+        Mithilfe regelmäßig verfügbarer Geodaten aus ganz Deutschland lässt
+        sich die kühlende Wirkung verschiedener städtischer Flächen bestimmen.
+        Dabei werden Baumkronen, Bodenbedeckung, Größe und Lage der Flächen
+        berücksichtigt. Als besonders effektive Kühlung gilt eine potenzielle
+        Temperaturabsenkung von mindestens 2,1 Grad Celsius.
+      </p>
+      <p>
+        Die Karte rechts zeigt den Anteil der Bevölkerung in 165 deutschen
+        Städten mit mehr als 50.000 Einwohnern in 2018, der durch Urbane Grüne
+        Infrastruktur mit guter bis sehr guter Kühlkapazität versorgt wird.
+      </p>
+      <p>
+        Insgesamt können 76 % der Bevölkerung in den 165 untersuchten
+        deutschen Städten von hohen oder sehr hohen Kühlkapazitäten in ihrer
+        unmittelbaren Wohnumgebung profitieren.
+      </p>
+      <big>Auf
+        <u id="tag_MCity" style="cursor: pointer"><em>Millionenstädte</em></u>
+        klicken,um die klimatischen Auswirkungen in der Stadt
+        anzuschauen.</big>
+      <p>
+        <a href="https://ioer-fdz.de/oekosysteme-deutschland/oekosystemleistungen/lokale-klimaregulation-in-staedten">
           Weitere Informationen zum Indikator 'Klimaregulation'
-          <span style="vertical-align: bottom;" class="material-symbols-outlined">
-          arrow_right_alt
-          </span></a></p></div>
+          <span style="vertical-align: bottom" class="material-symbols-outlined">
+            arrow_right_alt
+          </span></a>
+      </p>
+    </div>
 
-      <div id="map-container">
-        <span class="material-symbols-outlined" id="bnt_info">
-          <span>info</span>
-          
-          <span id="info_box"><p style="margin: 0 0 0.3em 0;">Geodaten: LBM-DE 2018<br> © GeoBasis-DE/BKG 2020* <br></p>
-            <p style="margin: 0 0 0.3em 0;">Stadtgrünraster 2018 © IÖR-Monitor 2022 </p>
-            © Copernicus 2021 <br>
-            <p style="margin: 0 0 0.3em 0;">VG250 © GeoBasis-DE/BKG 2018 </p>
-            <p style="margin: 0 0 0.3em 0;">Grünvolumen Dresden 2017 <br> © Landeshauptstadt Dresden 2019 </p>
-            <p style="margin: 0 0 0.3em 0;">Grünvolumen Leipzig, Bielefeld, <br>Potsdam 2018, Hanau 2017 <br>© LUP 2020 <br>
-            Gebietsstand vom 31.12.2016 </p>
-            <p style="margin: 0 0 0.3em 0;">© EuroGeographics 2017 <br></p>
-            Karte: S. Meier, R.-U.Syrbe, IÖR 2022 <br>
-            <a href="http://sg.geodatenzentrum.de/web_public/nutzungsbedingungen.pdf"><small>*Nutzungsbedingungen</small></a> 
-          </span>
-          </span>
-        </div>
-        
-        
-    </section>
+    <div id="map-container">
+      <span class="material-symbols-outlined" id="bnt_info">
+        <span>info</span>
 
-    <section id="canvas2">
-      <div id="citymap-container"></div>
-      <div id="citymap-sidebar"></div>
-      <button id="close-button"><span id="icon-close" class="material-symbols-outlined">
-        close
-        </span></button>
-    </section>
+        <span id="info_box">
+          <p style="margin: 0 0 0.3em 0">
+            Geodaten: LBM-DE 2018<br />
+            © GeoBasis-DE/BKG 2020* <br />
+          </p>
+          <p style="margin: 0 0 0.3em 0">
+            Stadtgrünraster 2018 © IÖR-Monitor 2022
+          </p>
+          © Copernicus 2021 <br />
+          <p style="margin: 0 0 0.3em 0">VG250 © GeoBasis-DE/BKG 2018</p>
+          <p style="margin: 0 0 0.3em 0">
+            Grünvolumen Dresden 2017 <br />
+            © Landeshauptstadt Dresden 2019
+          </p>
+          <p style="margin: 0 0 0.3em 0">
+            Grünvolumen Leipzig, Bielefeld, <br />Potsdam 2018, Hanau 2017
+            <br />© LUP 2020 <br />
+            Gebietsstand vom 31.12.2016
+          </p>
+          <p style="margin: 0 0 0.3em 0">© EuroGeographics 2017 <br /></p>
+          Karte: S. Meier, R.-U.Syrbe, IÖR 2022 <br />
+          <a
+            href="http://sg.geodatenzentrum.de/web_public/nutzungsbedingungen.pdf"><small>*Nutzungsbedingungen</small></a>
+        </span>
+      </span>
+    </div>
+  </section>
 
+  <section id="canvas2">
+    <div id="citymap-container"></div>
+    <div id="citymap-sidebar"></div>
+    <button id="close-button">
+      <span id="icon-close" class="material-symbols-outlined"> close </span>
+    </button>
+  </section>
 
-    <script src="Map.js" type="module"></script>
-    <script src="map_City.js" type="module"></script>
-  </body>
+  <script src="Map.js" type="module"></script>
+  <script src="map_City.js" type="module"></script>
+</body>
+
 </html>
